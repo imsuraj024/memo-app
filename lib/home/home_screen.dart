@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memo_app/widgets/my_button.dart';
+import 'package:memo_app/config/api_client.dart';
+import 'package:memo_app/widgets/my_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,7 +11,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  bool isExpanded = false;
+  ApiClient apiClient = ApiClient();
+
+  @override
+  void initState() {
+    super.initState();
+    apiClient.get('v3/memo_projects/memo_projects_parent_category_list', null);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -22,53 +30,16 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(onPressed: () {}, icon: Icon(Icons.search))
         ],
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 200,
-            child: Card(
-              color: Colors.lightBlue,
-              child: Row(
-                children: [
-                  Expanded(child: Container(color: Colors.yellow,)),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: .spaceEvenly,
-                      children: [
-                        Text('Software Projects', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),),
-                        Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: OutlinedButton.icon(onPressed: () {
-                            setState(() {
-                              isExpanded = !isExpanded;
-                            });
-                          }, label: Text(isExpanded ? 'Show Less' : 'Show More', style: TextStyle(color: Colors.white),),icon: Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down, 
-                          size: 20, color: Colors.white,),
-                          style: ButtonStyle(side: WidgetStateProperty.all(BorderSide(color: Colors.white),),),
-                        )
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          isExpanded ? SizedBox(
-            height: 400,
-            child: Column(
-              children: [
-                MyButton(name: 'Android',icons: Icons.lock_clock ,() => print('Android Button Tapped'),),
-                MyButton(name: 'iOS',icons: Icons.alarm ,() => print('iOS Button Tapped')),
-                MyButton(name: 'Python',icons: Icons.watch_rounded ,() => print('Python Button Tapped')),
-                MyButton(name: 'Flutter',icons: Icons.abc ,() => print('Flutter Button Tapped')),
-              
-              ],
-            ),
-          ) : SizedBox.shrink()
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            MyCard(),
+            MyCard(),
+          ],
+        ),
       ),
     );
   }
 }
+
 
