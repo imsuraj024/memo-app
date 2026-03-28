@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:memo_app/config/api_response.dart';
@@ -16,7 +18,6 @@ class ApiClient {
     print('get method is called');
     try {
       final response = await _dio.get(path, queryParameters: query);
-      print(response);
       return ApiResponse(
         message: response.statusMessage ?? 'An error occured', 
         statusCode: response.statusCode ?? 0, 

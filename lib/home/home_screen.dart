@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:memo_app/config/api_client.dart';
+import 'package:memo_app/config/api_response.dart';
 import 'package:memo_app/widgets/my_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,12 +17,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ApiClient apiClient = ApiClient();
 
-  @override
-  void initState() {
-    super.initState();
-    apiClient.get('v3/memo_projects/memo_projects_parent_category_list', null);
-  }
 
+  Future<List<CategoryList>> getData() async {
+    final response = await apiClient.get('v3/memo_projects/memo_projects_parent_category_list', null);
+    final List list = jsonDecode(response.data);
+    List<CategoryList> categoryList = [];
+    list.forEach((element) {
+      categoryList.add(CategoryList.fromJson(element));
+    });
+
+    return categoryList;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +39,30 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(onPressed: () {}, icon: Icon(Icons.search))
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            MyCard(),
-            MyCard(),
-          ],
-        ),
+      body: FutureBuilder(
+        future: getData(),
+        builder: (context, asyncSnapshot) {
+          print(asyncSnapshot);
+
+          if (asyncSnapshot.hasError){
+            return Center(child: Text(asyncSnapshot.error.toString()));
+          }
+          
+          if (asyncSnapshot.hasData){
+            return Column(
+              children: [
+                MyCard(),
+                MyCard(),
+              ],
+            );
+          }
+
+          if (asyncSnapshot.connectionState == ConnectionState.waiting){
+            return Center(child: CircularProgressIndicator());
+          }
+          
+          return SizedBox();
+        }
       ),
     );
   }
