@@ -75,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) => MyCard(
                   title: asyncSnapshot.data![index].catName ?? "Unknown",
                   imageUrl: asyncSnapshot.data![index].catImage ?? "",
+                  parentId: asyncSnapshot.data![index].id ?? "",
                 ),
                 itemCount: asyncSnapshot.data!.length,
               );
