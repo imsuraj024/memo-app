@@ -14,12 +14,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   ApiClient apiClient = ApiClient();
 
-
-  Future<List<CategoryList>> getData() async {
-    final response = await apiClient.get('v3/memo_projects/memo_projects_parent_category_list', null);
+  Future<List<CategoryList>?> getData() async {
+    await Future.delayed(Duration(seconds: 2));
+    final response = await apiClient.get(
+      'v3/memo_projects/memo_projects_parent_category_list',
+      null,
+    );
     final List list = jsonDecode(response.data);
     List<CategoryList> categoryList = [];
     list.forEach((element) {
@@ -30,42 +32,57 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    apiClient
+        .get('v3/memo_projects/memo_projects_all_data', null)
+        .then((value) {
+          if (kDebugMode) {
+            print(value.data);
+          }
+        })
+        .catchError((error) {
+          if (kDebugMode) {
+            print(error.toString());
+          }
+        });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('MEMO PROJECTS'),
         centerTitle: true,
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.search))
-        ],
+        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
       ),
       body: FutureBuilder(
         future: getData(),
         builder: (context, asyncSnapshot) {
-          print(asyncSnapshot);
-
-          if (asyncSnapshot.hasError){
-            return Center(child: Text(asyncSnapshot.error.toString()));
-          }
-          
-          if (asyncSnapshot.hasData){
-            return Column(
-              children: [
-                MyCard(),
-                MyCard(),
-              ],
-            );
-          }
-
-          if (asyncSnapshot.connectionState == ConnectionState.waiting){
+          if (asyncSnapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
-          
-          return SizedBox();
-        }
+
+          if (asyncSnapshot.hasError) {
+            return Center(child: Text(asyncSnapshot.error.toString()));
+          }
+
+          if (asyncSnapshot.data != null && asyncSnapshot.hasData) {
+            if (asyncSnapshot.data!.isEmpty) {
+              return Center(child: Text('Data empty'));
+            } else {
+              return ListView.builder(
+                itemBuilder: (context, index) => MyCard(
+                  title: asyncSnapshot.data![index].catName ?? "Unknown",
+                  imageUrl: asyncSnapshot.data![index].catImage ?? "",
+                ),
+                itemCount: asyncSnapshot.data!.length,
+              );
+            }
+          }
+          return Container(color: Colors.amber);
+        },
       ),
     );
   }
 }
-
-
