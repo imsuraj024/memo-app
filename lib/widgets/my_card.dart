@@ -5,6 +5,7 @@ import 'package:memo_app/config/api_client.dart';
 import 'package:memo_app/config/api_response.dart';
 import 'package:memo_app/config/arguments.dart';
 import 'package:memo_app/project/project_list_screen.dart';
+import 'package:memo_app/project/subcategory_list_screen.dart';
 import 'package:memo_app/widgets/my_button.dart';
 
 class MyCard extends StatefulWidget {
@@ -49,8 +50,8 @@ class _MyCardState extends State<MyCard> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProjectListScreen(
-                  args: ProjectListArguments(
+                builder: (context) => SubcategoryListScreen(
+                  args: SubCategoryArguments(
                     parentId: widget.parentId,
                     title: widget.title,
                     parentImage: widget.imageUrl,
@@ -128,35 +129,7 @@ class _MyCardState extends State<MyCard> {
           ),
         ),
         isExpanded
-            ?
-              // ? SizedBox(
-              //     height: 400,
-              //     child: Column(
-              //       children: [
-              //         MyButton(
-              //           name: 'Android',
-              //           icons: Icons.lock_clock,
-              //           () => print('Android Button Tapped'),
-              //         ),
-              //         MyButton(
-              //           name: 'iOS',
-              //           icons: Icons.alarm,
-              //           () => print('iOS Button Tapped'),
-              //         ),
-              //         MyButton(
-              //           name: 'Python',
-              //           icons: Icons.watch_rounded,
-              //           () => print('Python Button Tapped'),
-              //         ),
-              //         MyButton(
-              //           name: 'Flutter',
-              //           icons: Icons.abc,
-              //           () => print('Flutter Button Tapped'),
-              //         ),
-              //       ],
-              //     ),
-              //   )
-              FutureBuilder(
+            ? FutureBuilder(
                 future: getChildData(widget.parentId),
                 builder: (context, asyncSnapshot) {
                   if (asyncSnapshot.connectionState ==
@@ -176,6 +149,18 @@ class _MyCardState extends State<MyCard> {
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemBuilder: (context, index) => ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProjectListScreen(
+                                  name:
+                                      asyncSnapshot.data![index].catName ??
+                                      "Unknown",
+                                ),
+                              ),
+                            );
+                          },
                           leading: Image.network(
                             asyncSnapshot.data![index].catImg ?? "",
                             width: 50,

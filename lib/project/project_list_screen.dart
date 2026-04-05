@@ -1,97 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:memo_app/config/api_client.dart';
-import 'package:memo_app/config/api_response.dart';
-import 'package:memo_app/config/arguments.dart';
 
 class ProjectListScreen extends StatelessWidget {
-  ProjectListScreen({super.key, required this.args});
+  const ProjectListScreen({super.key, required this.name});
 
-  final ProjectListArguments args;
-
-  final ApiClient apiClient = ApiClient();
-
-  Future<List<SubCategory>> getChildData(String parentId) async {
-    final response = await apiClient.get(
-      'v3/memo_projects/memo_projects_child_category_list',
-      {'parent_id': parentId},
-    );
-    final List list = jsonDecode(response.data);
-    List<SubCategory> subCategoryList = [];
-    list.forEach((element) {
-      subCategoryList.add(SubCategory.fromJson(element));
-    });
-    return subCategoryList;
-  }
+  final String name;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('PROJECTS'), centerTitle: true),
-      body: Column(
-        spacing: 16,
-        children: [
-          Image.network(
-            args.parentImage,
-            width: double.infinity,
-            height: 200,
-            fit: BoxFit.fill,
-            errorBuilder: (context, error, stackTrace) =>
-                FlutterLogo(size: 200),
-          ),
-          Expanded(
-            child: FutureBuilder(
-              future: getChildData(args.parentId),
-              builder: (context, asyncSnapshot) {
-                if (asyncSnapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-
-                if (asyncSnapshot.hasError) {
-                  return Center(child: Text(asyncSnapshot.error.toString()));
-                }
-
-                if (asyncSnapshot.data != null && asyncSnapshot.hasData) {
-                  if (asyncSnapshot.data!.isEmpty) {
-                    return Center(child: Text('Data empty'));
-                  } else {
-                    return ListView.builder(
-                      // physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) => Card(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        color: Colors.white,
-                        child: ListTile(
-                          leading: Image.network(
-                            asyncSnapshot.data![index].catImg ?? "",
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                FlutterLogo(size: 100),
-                          ),
-                          title: Text(
-                            asyncSnapshot.data![index].catName ?? "Unknown",
-                          ),
-                        ),
-                      ),
-                      itemCount: asyncSnapshot.data!.length,
-                    );
-                  }
-                }
-                return Container(color: Colors.amber);
-              },
-            ),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(name.toUpperCase()), centerTitle: true),
     );
   }
 }
