@@ -59,3 +59,37 @@ class SubCategory {
     return data;
   }
 }
+
+class ProjectItem {
+  String? id;
+  String? title;
+  String? description;
+  String? images;
+  String? thumbImage;
+
+  ProjectItem({
+    this.id,
+    this.title,
+    this.description,
+    this.images,
+    this.thumbImage,
+  });
+
+  ProjectItem.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    title = json['title'];
+    description = json['description'];
+    images = json['images'];
+    thumbImage = json['thumb_image'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['description'] = description;
+    data['images'] = images;
+    data['thumb_image'] = thumbImage;
+    return data;
+  }
+}

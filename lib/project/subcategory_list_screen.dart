@@ -4,14 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:memo_app/config/api_client.dart';
 import 'package:memo_app/config/api_response.dart';
 import 'package:memo_app/config/arguments.dart';
+import 'package:memo_app/config/shared_pref.dart';
 import 'package:memo_app/project/project_list_screen.dart';
 
-class SubcategoryListScreen extends StatelessWidget {
-  SubcategoryListScreen({super.key, required this.args});
+class SubcategoryListScreen extends StatefulWidget {
+  const SubcategoryListScreen({super.key, required this.args});
 
   final SubCategoryArguments args;
 
+  @override
+  State<SubcategoryListScreen> createState() => _SubcategoryListScreenState();
+}
+
+class _SubcategoryListScreenState extends State<SubcategoryListScreen> {
   final ApiClient apiClient = ApiClient();
+
+  final SharedPref sharedPref = SharedPref.instance;
 
   Future<List<SubCategory>> getChildData(String parentId) async {
     final response = await apiClient.get(
@@ -27,6 +35,12 @@ class SubcategoryListScreen extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    sharedPref.setKeyValue('screen', 'SubcategoryList');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('PROJECTS'), centerTitle: true),
@@ -34,7 +48,7 @@ class SubcategoryListScreen extends StatelessWidget {
         spacing: 16,
         children: [
           Image.network(
-            args.parentImage,
+            widget.args.parentImage,
             width: double.infinity,
             height: 200,
             fit: BoxFit.fill,
@@ -43,7 +57,7 @@ class SubcategoryListScreen extends StatelessWidget {
           ),
           Expanded(
             child: FutureBuilder(
-              future: getChildData(args.parentId),
+              future: getChildData(widget.args.parentId),
               builder: (context, asyncSnapshot) {
                 if (asyncSnapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -78,6 +92,9 @@ class SubcategoryListScreen extends StatelessWidget {
                                   name:
                                       asyncSnapshot.data![index].catName ??
                                       "Unknown",
+                                  imageUrl:
+                                      asyncSnapshot.data![index].catImg ?? "",
+                                  id: asyncSnapshot.data![index].id ?? "",
                                 ),
                               ),
                             );

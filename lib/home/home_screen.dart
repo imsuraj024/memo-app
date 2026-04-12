@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:memo_app/config/api_client.dart';
 import 'package:memo_app/config/api_response.dart';
+import 'package:memo_app/config/shared_pref.dart';
 import 'package:memo_app/widgets/my_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   ApiClient apiClient = ApiClient();
+  SharedPref sharedPref = SharedPref.instance;
 
   Future<List<CategoryList>?> getData() async {
     await Future.delayed(Duration(seconds: 2));
@@ -23,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
       null,
     );
     final List list = jsonDecode(response.data);
+
     List<CategoryList> categoryList = [];
     list.forEach((element) {
       categoryList.add(CategoryList.fromJson(element));
@@ -34,18 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    apiClient
-        .get('v3/memo_projects/memo_projects_all_data', null)
-        .then((value) {
-          if (kDebugMode) {
-            print(value.data);
-          }
-        })
-        .catchError((error) {
-          if (kDebugMode) {
-            print(error.toString());
-          }
-        });
+    sharedPref.setKeyValue('screen', 'Home');
   }
 
   @override

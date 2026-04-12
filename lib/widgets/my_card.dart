@@ -157,6 +157,9 @@ class _MyCardState extends State<MyCard> {
                                   name:
                                       asyncSnapshot.data![index].catName ??
                                       "Unknown",
+                                  imageUrl:
+                                      asyncSnapshot.data![index].catImg ?? "",
+                                  id: asyncSnapshot.data![index].id ?? "",
                                 ),
                               ),
                             );
