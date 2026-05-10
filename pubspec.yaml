@@ -37,6 +37,7 @@ dependencies:
   dio: ^5.9.2
   shared_preferences: ^2.5.5
   flutter_html: ^3.0.0
+  get: ^4.7.3
 
 dev_dependencies:
   flutter_test:

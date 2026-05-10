@@ -63,6 +63,21 @@ class _HomeScreenState extends State<HomeScreen> {
             if (asyncSnapshot.data!.isEmpty) {
               return Center(child: Text('Data empty'));
             } else {
+              if (kIsWeb || MediaQuery.of(context).size.width > 600) {
+                return GridView.builder(
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 2.5,
+                  ),
+                  itemBuilder: (context, index) => MyCard(
+                    title: asyncSnapshot.data![index].catName ?? "Unknown",
+                    imageUrl: asyncSnapshot.data![index].catImage ?? "",
+                    parentId: asyncSnapshot.data![index].id ?? "",
+                  ),
+                  itemCount: asyncSnapshot.data!.length,
+                );
+              }
               return ListView.builder(
                 itemBuilder: (context, index) => MyCard(
                   title: asyncSnapshot.data![index].catName ?? "Unknown",

@@ -1,12 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:memo_app/config/api_client.dart';
 import 'package:memo_app/config/api_response.dart';
 import 'package:memo_app/config/arguments.dart';
 import 'package:memo_app/project/project_list_screen.dart';
 import 'package:memo_app/project/subcategory_list_screen.dart';
-import 'package:memo_app/widgets/my_button.dart';
 
 class MyCard extends StatefulWidget {
   const MyCard({
@@ -43,148 +43,175 @@ class _MyCardState extends State<MyCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SubcategoryListScreen(
-                  args: SubCategoryArguments(
-                    parentId: widget.parentId,
-                    title: widget.title,
-                    parentImage: widget.imageUrl,
+    return GestureDetector(
+      onTap: kIsWeb
+          ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SubcategoryListScreen(
+                    args: SubCategoryArguments(
+                      parentId: widget.parentId,
+                      title: widget.title,
+                      parentImage: widget.imageUrl,
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-          child: SizedBox(
-            height: 200,
-            child: Card(
-              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              color: Colors.white,
-              child: Row(
+              );
+            }
+          : null,
+      child: Card(
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
                 spacing: 10,
                 children: [
                   Expanded(
-                    child: Image.network(
-                      widget.imageUrl,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(child: CircularProgressIndicator());
-                      },
-                      errorBuilder: (context, error, stackTrace) =>
-                          Center(child: FlutterLogo(size: 80)),
+                    flex: 2,
+                    child: Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: Colors.grey.shade700),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Image.network(
+                        widget.imageUrl,
+                        height: 100,
+                        fit: BoxFit.fill,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(child: CircularProgressIndicator());
+                        },
+                        errorBuilder: (context, error, stackTrace) =>
+                            Center(child: FlutterLogo(size: 80)),
+                      ),
                     ),
                   ),
                   Expanded(
+                    flex: 3,
                     child: Column(
-                      mainAxisAlignment: .spaceEvenly,
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text(
                           widget.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 28,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              setState(() {
-                                isExpanded = !isExpanded;
-                              });
-                            },
-                            label: Text(
-                              isExpanded ? 'Show Less' : 'Show More',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            icon: Icon(
-                              isExpanded
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down,
-                              size: 20,
-                              color: Colors.black,
-                            ),
-                            style: ButtonStyle(
-                              side: WidgetStateProperty.all(
-                                BorderSide(color: Colors.black),
+                        if (!kIsWeb)
+                          Directionality(
+                            textDirection: TextDirection.rtl,
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  isExpanded = !isExpanded;
+                                });
+                              },
+                              label: Text(
+                                isExpanded ? 'Show Less' : 'Show More',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              icon: Icon(
+                                isExpanded
+                                    ? Icons.arrow_drop_up
+                                    : Icons.arrow_drop_down,
+                                size: 18,
+                                color: Colors.black,
+                              ),
+                              style: ButtonStyle(
+                                side: WidgetStateProperty.all(
+                                  BorderSide(color: Colors.black),
+                                ),
                               ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-        ),
-        isExpanded
-            ? FutureBuilder(
-                future: getChildData(widget.parentId),
-                builder: (context, asyncSnapshot) {
-                  if (asyncSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
+              isExpanded
+                  ? FutureBuilder(
+                      future: getChildData(widget.parentId),
+                      builder: (context, asyncSnapshot) {
+                        if (asyncSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
 
-                  if (asyncSnapshot.hasError) {
-                    return Center(child: Text(asyncSnapshot.error.toString()));
-                  }
+                        if (asyncSnapshot.hasError) {
+                          return Center(
+                            child: Text(asyncSnapshot.error.toString()),
+                          );
+                        }
 
-                  if (asyncSnapshot.data != null && asyncSnapshot.hasData) {
-                    if (asyncSnapshot.data!.isEmpty) {
-                      return Center(child: Text('Data empty'));
-                    } else {
-                      return ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) => ListTile(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProjectListScreen(
-                                  name:
-                                      asyncSnapshot.data![index].catName ??
+                        if (asyncSnapshot.data != null &&
+                            asyncSnapshot.hasData) {
+                          if (asyncSnapshot.data!.isEmpty) {
+                            return Center(child: Text('Data empty'));
+                          } else {
+                            return ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) => ListTile(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProjectListScreen(
+                                        name:
+                                            asyncSnapshot
+                                                .data![index]
+                                                .catName ??
+                                            "Unknown",
+                                        imageUrl:
+                                            asyncSnapshot.data![index].catImg ??
+                                            "",
+                                        id: asyncSnapshot.data![index].id ?? "",
+                                      ),
+                                    ),
+                                  );
+                                },
+                                leading: Image.network(
+                                  asyncSnapshot.data![index].catImg ?? "",
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      FlutterLogo(size: 50),
+                                ),
+                                title: Text(
+                                  asyncSnapshot.data![index].catName ??
                                       "Unknown",
-                                  imageUrl:
-                                      asyncSnapshot.data![index].catImg ?? "",
-                                  id: asyncSnapshot.data![index].id ?? "",
                                 ),
                               ),
+                              itemCount: asyncSnapshot.data!.length,
                             );
-                          },
-                          leading: Image.network(
-                            asyncSnapshot.data![index].catImg ?? "",
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                FlutterLogo(size: 50),
-                          ),
-                          title: Text(
-                            asyncSnapshot.data![index].catName ?? "Unknown",
-                          ),
-                        ),
-                        itemCount: asyncSnapshot.data!.length,
-                      );
-                    }
-                  }
-                  return Container(color: Colors.amber);
-                },
-              )
-            : SizedBox.shrink(),
-      ],
+                          }
+                        }
+                        return Container(color: Colors.amber);
+                      },
+                    )
+                  : SizedBox.shrink(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
