@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "214167789",
+    "project_id": "my-firebase-1234",
+    "storage_bucket": "my-firebase-1234.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214167789:android:19e0791367993687245ce4",
+        "android_client_info": {
+          "package_name": "com.memo.app.memo_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "214167789-kskrdortmd251g4halimkejhfgjg6500.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgGarnn3OPgaD6bG2teigEA9nGJvv3RA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "214167789-kskrdortmd251g4halimkejhfgjg6500.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "214167789-8mcuca2f7fa9asgn7dm9eehskj5p2eep.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.memo.app.memoApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

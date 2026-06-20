@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:memo_app/config/api_client.dart';
 import 'package:memo_app/config/api_response.dart';
 import 'package:memo_app/config/arguments.dart';
@@ -46,18 +47,19 @@ class _MyCardState extends State<MyCard> {
     return GestureDetector(
       onTap: kIsWeb
           ? () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SubcategoryListScreen(
-                    args: SubCategoryArguments(
-                      parentId: widget.parentId,
-                      title: widget.title,
-                      parentImage: widget.imageUrl,
-                    ),
-                  ),
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => SubcategoryListScreen(
+              //       args: SubCategoryArguments(
+              //         parentId: widget.parentId,
+              //         title: widget.title,
+              //         parentImage: widget.imageUrl,
+              //       ),
+              //     ),
+              //   ),
+              // );
+              Get.toNamed('/subcategory_list');
             }
           : null,
       child: Card(
@@ -170,22 +172,23 @@ class _MyCardState extends State<MyCard> {
                               shrinkWrap: true,
                               itemBuilder: (context, index) => ListTile(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ProjectListScreen(
-                                        name:
-                                            asyncSnapshot
-                                                .data![index]
-                                                .catName ??
-                                            "Unknown",
-                                        imageUrl:
-                                            asyncSnapshot.data![index].catImg ??
-                                            "",
-                                        id: asyncSnapshot.data![index].id ?? "",
-                                      ),
-                                    ),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => ProjectListScreen(
+                                  //       name:
+                                  //           asyncSnapshot
+                                  //               .data![index]
+                                  //               .catName ??
+                                  //           "Unknown",
+                                  //       imageUrl:
+                                  //           asyncSnapshot.data![index].catImg ??
+                                  //           "",
+                                  //       id: asyncSnapshot.data![index].id ?? "",
+                                  //     ),
+                                  //   ),
+                                  // );
+                                  Get.toNamed('/project_list');
                                 },
                                 leading: Image.network(
                                   asyncSnapshot.data![index].catImg ?? "",

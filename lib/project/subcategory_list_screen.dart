@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:memo_app/config/api_client.dart';
 import 'package:memo_app/config/api_response.dart';
 import 'package:memo_app/config/arguments.dart';
@@ -85,19 +86,20 @@ class _SubcategoryListScreenState extends State<SubcategoryListScreen> {
                         color: Colors.white,
                         child: ListTile(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProjectListScreen(
-                                  name:
-                                      asyncSnapshot.data![index].catName ??
-                                      "Unknown",
-                                  imageUrl:
-                                      asyncSnapshot.data![index].catImg ?? "",
-                                  id: asyncSnapshot.data![index].id ?? "",
-                                ),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => ProjectListScreen(
+                            //       name:
+                            //           asyncSnapshot.data![index].catName ??
+                            //           "Unknown",
+                            //       imageUrl:
+                            //           asyncSnapshot.data![index].catImg ?? "",
+                            //       id: asyncSnapshot.data![index].id ?? "",
+                            //     ),
+                            //   ),
+                            // );
+                            Get.toNamed('/project_list');
                           },
                           leading: Image.network(
                             asyncSnapshot.data![index].catImg ?? "",
